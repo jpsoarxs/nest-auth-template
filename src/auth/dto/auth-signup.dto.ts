@@ -1,26 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+} from 'class-validator';
 import xss from 'xss';
 
 export class AuthSignupDto {
-  // username
   @ApiProperty({
-    description: 'The username of the user',
+    description: 'The name of the user',
+    type: String,
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => xss(value.trim()))
+  name?: string;
+
+  @ApiProperty({
+    description: 'The email of the user',
     type: String,
     required: true,
   })
   @IsNotEmpty()
-  @IsString()
-  @Length(5, 10)
-  @Matches(/^[a-z0-9_]*$/, {
-    message:
-      'username can only contain lowercase characters, digits, and underscores.',
-  })
+  @IsEmail()
   @Transform(({ value }) => xss(value.trim()))
-  username: string;
+  email: string;
 
-  // password
   @ApiProperty({
     description: 'The password of the user',
     type: String,

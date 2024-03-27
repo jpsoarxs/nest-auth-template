@@ -1,21 +1,19 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE "users" (
+    "id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "name" TEXT,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
 
-  - The primary key for the `users` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `hashedRT` on the `users` table. All the data in the column will be lost.
-
-*/
--- AlterTable
-ALTER TABLE "users" DROP CONSTRAINT "users_pkey",
-DROP COLUMN "hashedRT",
-ALTER COLUMN "id" DROP DEFAULT,
-ALTER COLUMN "id" SET DATA TYPE TEXT,
-ADD CONSTRAINT "users_pkey" PRIMARY KEY ("id");
-DROP SEQUENCE "users_id_seq";
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "sessions" (
     "id" TEXT NOT NULL,
+    "session_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "user_id" TEXT NOT NULL,
@@ -24,6 +22,12 @@ CREATE TABLE "sessions" (
 
     CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "sessions_session_id_key" ON "sessions"("session_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "sessions_token_key" ON "sessions"("token");

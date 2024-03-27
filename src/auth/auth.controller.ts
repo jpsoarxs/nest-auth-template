@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Public, getCurrentUser, getCurrentUserId } from 'src/auth/decorators';
-import { RtGuard } from 'src/auth/guards';
+import { AtGuard, RtGuard } from 'src/auth/guards';
 import { AuthService } from './auth.service';
 import { ApiLogoutAuth, ApiRefreshAuth } from './decorators/swagger.decorator';
 import { AuthSigninDto, AuthSignupDto } from './dto';
@@ -24,8 +24,6 @@ export class AuthController {
     return this.authService.signup(dto);
   }
 
-  // ======================================
-
   @Public()
   @Post('signin')
   @HttpCode(HttpStatus.OK)
@@ -33,8 +31,8 @@ export class AuthController {
     return this.authService.signin(dto);
   }
 
-  @Public()
   @Post('logout')
+  @UseGuards(AtGuard)
   @ApiLogoutAuth()
   logout(
     @getCurrentUserId() userId: string,
@@ -43,8 +41,6 @@ export class AuthController {
   ) {
     return this.authService.logout(userId, session, accessToken);
   }
-
-  // ======================================
 
   @Public()
   @Post('refresh')

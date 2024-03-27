@@ -30,7 +30,7 @@ export class AuthService {
     try {
       const sessionId = randomUUID();
       const find = await this.prisma.user.count({
-        where: { username: dto.username },
+        where: { email: dto.email },
       });
 
       if (find > 0) {
@@ -39,14 +39,15 @@ export class AuthService {
 
       const newUser = await this.prisma.user.create({
         data: {
-          username: dto.username,
+          name: dto.name,
+          email: dto.email,
           password,
         },
       });
 
       const tokens: Tokens = await this.generateTokens(
         newUser.id,
-        newUser.username,
+        newUser.email,
         sessionId,
       );
 
@@ -66,7 +67,7 @@ export class AuthService {
     const sessionId = randomUUID();
 
     const user = await this.prisma.user.findUnique({
-      where: { username: dto.username },
+      where: { email: dto.email },
     });
 
     if (!user) throw new ForbiddenException('Access Denied');
@@ -76,7 +77,7 @@ export class AuthService {
 
     const tokens: Tokens = await this.generateTokens(
       user.id,
-      user.username,
+      user.email,
       sessionId,
     );
     await this.createRefreshTokenHash(user.id, tokens.refresh_token, sessionId);
@@ -139,7 +140,7 @@ export class AuthService {
 
     const tokens: Tokens = await this.generateTokens(
       user.id,
-      user.username,
+      user.email,
       refreshTokenMatches.session_id,
     );
     await this.updateRefreshTokenHash(
